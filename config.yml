@@ -5,7 +5,7 @@ license: MIT
 licenselink: "https://opensource.org/license/mit"
 description: "my home"
 homepage: "https://ebotian.github.io/"
-defaultContentLanguage: "zh"
+defaultContentLanguage: "en"
 googleAnalytics: G-4WXJ5TEK2S
 paginate: 10
 hasCJKLanguage: true
