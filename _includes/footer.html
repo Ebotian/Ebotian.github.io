@@ -1,16 +1,35 @@
-	<footer>
-    <span class="copyright">© {% if site.start %}{{ site.start }}-{% endif %}{{ site.now }} {{ site.name }}</span>
-    <div>
-        <p class="comment">
-            <a href="https://github.com/jekyll/jekyll">Jekyll</a> 
-            Theme <a href="https://github.com/soyaine/jekyll-theme-diary">Diary</a> 
-            by <a href="https://github.com/soyaine">Soyaine</a><br>
-		</p>
-        
-		<ul class="contact">
-            <li><a href="https://github.com/{{ site.link.github }}"><i class="fa fa-2x fa-github"></i> </a> </li>
-            <li><a href="https://twitter.com/{{ site.link.twitter }}"><i class="fa fa-2x fa-twitter"></i> </a> </li>
-            <li><a href="mailto:{{ site.link.email }}"><i class="fa fa-envelope fa-2x"></i></a></li>
-        </ul>
+{%- if site.texture.analytics_id -%}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.texture.analytics_id }}"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag() { dataLayer.push(arguments); }
+	gtag('js', new Date());
+
+	gtag('config', '{{ site.texture.analytics_id }}');
+</script>
+{%- endif -%}
+
+{%- if site.texture.showPicker -%}
+<div id="texture-picker">
+	<div style="display:flex;justify-content: space-between">
+		<p>Select Texture</p>
+		<p><a id="hidePicker" href="#">Hide</a></p>
 	</div>
-</footer>
+	<div class="texture-colors">
+		<div id="black"></div>
+		<div id="blue"></div>	
+		<div id="red"></div>	
+		<div id="purple"></div>		
+		<div id="green"></div>
+	</div>
+	<p class="info">You can use the <b>showPicker</b> property in _config.yml to hide this picker permanently.</p>
+	<p class="info">You can use the <b>texture</b> property in _config.yml to apply a texture permanently.</p>
+</div>
+<script src="{{ "/assets/js/picker.js" | relative_url }}"></script>
+{%- endif -%}
+
+{%- if site.texture.useMathJax -%}
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+{%- endif -%}
