@@ -16,12 +16,12 @@ sass:
 
 permalink: /posts/:title/
 texture:
-  title: Adam Denisov
+  title: 易博天的个人博客
   tagline: Developer. Designer
   date_format: "%b %-d, %Y"
-  style: black
+  style: blue
   showNav: false
-  showPicker: true
+  showPicker: false
 
   # generate social links in footer
   social_links:
