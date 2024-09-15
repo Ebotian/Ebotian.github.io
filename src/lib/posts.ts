@@ -6,7 +6,7 @@ export type Post = {
   id: string;
   date: string;
   title: string;
-  content?: string;
+  content: string;
 };
 
 const postsDirectory = path.join(process.cwd(), 'src/content/posts')
@@ -39,6 +39,7 @@ export function getSortedPostsData(): Post[] {
       id,
       date: stats.mtime.toISOString().split('T')[0],
       title: matterResult.data.title as string,
+      content: matterResult.content
     }
   })
 
