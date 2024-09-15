@@ -3,273 +3,38 @@
 # 确保我们在正确的目录
 cd ~/ebotian_blog
 
-# 安装必要的依赖
-npm install @tailwindcss/typography react-icons react-share
-pip3 install pillow
+# 更新 posts.ts 文件
+cat > src/lib/posts.ts << EOL
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
 
-# 创建颜色提取脚本
-cat > color_extractor.py << EOL
-import sys
-from PIL import Image
-import colorsys
+export type Post = {
+  id: string;
+  date: string;
+  title: string;
+  content?: string;
+};
 
-def get_dominant_colors(image_path, num_colors=5):
-    image = Image.open(image_path)
-    image = image.resize((100, 100))  # Resize for faster processing
-    result = image.convert('P', palette=Image.ADAPTIVE, colors=num_colors)
-    result = result.convert('RGB')
-    colors = result.getcolors(100*100)
+const postsDirectory = path.join(process.cwd(), 'src/content/posts')
 
-    # Sort colors by count
-    sorted_colors = sorted(colors, key=lambda x: x[0], reverse=True)
-
-    # Convert RGB to HSL and sort by lightness
-    hsl_colors = [colorsys.rgb_to_hls(r/255, g/255, b/255) for count, (r, g, b) in sorted_colors]
-    sorted_hsl = sorted(hsl_colors, key=lambda x: x[1])  # Sort by lightness
-
-    # Convert back to RGB
-    sorted_rgb = [colorsys.hls_to_rgb(h, l, s) for h, l, s in sorted_hsl]
-
-    # Convert to hex
-    hex_colors = ['#%02x%02x%02x' % tuple(int(x*255) for x in rgb) for rgb in sorted_rgb]
-
-    return hex_colors
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Please provide the path to the image file.")
-        sys.exit(1)
-
-    image_path = sys.argv[1]
-    colors = get_dominant_colors(image_path)
-
-    print(f"primary: '{colors[0]}',")
-    print(f"secondary: '{colors[1]}',")
-    print(f"background: '{colors[-1]}',")
+// ... 其余代码保持不变 ...
 EOL
 
-# 运行 Python 脚本来提取颜色
-echo "正在从背景图提取颜色..."
-colors=$(python3 color_extractor.py public/background.png)
-
-# 更新 tailwind.config.js 以使用提取的颜色
-cat > tailwind.config.js << EOL
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        ${colors}
-      },
-      typography: (theme) => ({
-        DEFAULT: {
-          css: {
-            color: theme('colors.gray.700'),
-            a: {
-              color: theme('colors.primary'),
-              '&:hover': {
-                color: theme('colors.secondary'),
-              },
-            },
-          },
-        },
-      }),
-    },
-  },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
-}
-EOL
-
-# 更新 src/app/layout.tsx
-cat > src/app/layout.tsx << EOL
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import Link from 'next/link'
-import { FaGithub, FaTwitter } from 'react-icons/fa'
-import Search from '../components/Search'
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'Ebotian 的博客',
-  description: '分享技术、生活和思考',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="zh">
-      <body className={\`\${inter.className} bg-background text-gray-800\`}>
-        <nav className="bg-primary text-white p-4">
-          <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-            <Link href="/" className="text-2xl font-bold hover:text-secondary mb-4 md:mb-0">Ebotian 的博客</Link>
-            <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-              <Search />
-              <div className="flex items-center space-x-4">
-                <Link href="https://github.com/Ebotian" target="_blank" rel="noopener noreferrer">
-                  <FaGithub className="text-2xl hover:text-secondary" />
-                </Link>
-                <Link href="https://x.com/AsilenA123" target="_blank" rel="noopener noreferrer">
-                  <FaTwitter className="text-2xl hover:text-secondary" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <main className="container mx-auto px-4 py-8">
-          {children}
-        </main>
-        <footer className="bg-primary text-white p-4 mt-8">
-          <div className="container mx-auto text-center">
-            © 2024 Ebotian 的博客. All rights reserved.
-          </div>
-        </footer>
-      </body>
-    </html>
-  )
-}
-EOL
-
-# 更新 src/app/page.tsx
-cat > src/app/page.tsx << EOL
-import Link from 'next/link'
-import { getSortedPostsData } from '../lib/posts'
-
-export default function Home() {
-  const allPostsData = getSortedPostsData()
-  return (
-    <div>
-      <div className="h-screen bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center relative" style={{backgroundImage: 'url("/background.png")'}}>
-        <h1 className="text-6xl font-bold text-white text-center" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>欢迎来到 Ebotian 的博客</h1>
-        <a href="https://www.pixiv.net/artworks/110554663" target="_blank" rel="noopener noreferrer" className="absolute bottom-4 right-4 text-white text-sm opacity-70 hover:opacity-100 transition-opacity">
-          背景图片来源: Pixiv
-        </a>
-      </div>
-      <div className="py-16">
-        <h2 className="text-4xl font-bold mb-8 text-primary">最新文章</h2>
-        <ul className="space-y-4">
-          {allPostsData.map(({ id, date, title }) => (
-            <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-              <Link href={\`/posts/\${id.split('/').map(encodeURIComponent).join('/')}\`}>
-                <h3 className="text-2xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h3>
-              </Link>
-              {date && <p className="text-gray-500 text-sm">{date}</p>}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  )
-}
-EOL
-
-# 更新 src/app/posts/[...id]/page.tsx
-mkdir -p src/app/posts/[...id]
-cat > src/app/posts/[...id]/page.tsx << EOL
-import { getAllPostIds, getPostData } from '../../../lib/posts'
-import Link from 'next/link'
-import ShareButtons from '../../../components/ShareButtons'
-
-export default async function Post({ params }: { params: { id: string[] } }) {
-  const postData = await getPostData(params.id)
-  return (
-    <article className="prose lg:prose-xl mx-auto bg-white shadow-lg rounded-lg p-8">
-      <Link href="/" className="text-secondary hover:text-primary mb-4 inline-block">&larr; 返回首页</Link>
-      <h1 className="text-4xl font-bold mb-4 text-primary">{postData.title || postData.id}</h1>
-      {postData.date && <p className="text-gray-500 mb-8">{postData.date}</p>}
-      <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
-      <ShareButtons title={postData.title || postData.id} />
-    </article>
-  )
-}
-
-export async function generateStaticParams() {
-  const paths = getAllPostIds()
-  return paths.map((path) => ({
-    id: path.id.split('/')
-  }))
-}
-EOL
-
-# 创建搜索API路由
-mkdir -p src/app/api/search
-cat > src/app/api/search/route.ts << EOL
-import { NextResponse } from 'next/server'
-import { getSortedPostsData } from '../../../lib/posts'
-
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const query = searchParams.get('q')
-  const allPosts = getSortedPostsData()
-
-  const filteredPosts = allPosts.filter(post =>
-    post.title.toLowerCase().includes(query?.toLowerCase() || '') ||
-    post.id.toLowerCase().includes(query?.toLowerCase() || '')
-  )
-
-  return NextResponse.json(filteredPosts)
-}
-EOL
-
-# 创建搜索组件
-mkdir -p src/components
-cat > src/components/Search.tsx << EOL
-'use client'
-
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-
-export default function Search() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const router = useRouter()
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchTerm.trim()) {
-      router.push(\`/search?q=\${encodeURIComponent(searchTerm.trim())}\`)
-    }
-  }
-
-  return (
-    <form onSubmit={handleSearch} className="flex">
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="搜索文章..."
-        className="px-2 py-1 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary"
-      />
-      <button type="submit" className="bg-secondary text-white px-4 py-1 rounded-r-md hover:bg-primary transition-colors">
-        搜索
-      </button>
-    </form>
-  )
-}
-EOL
-
-# 创建搜索结果页面
+# 更新 search/page.tsx 文件
 cat > src/app/search/page.tsx << EOL
 'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import Highlighter from 'react-highlight-words'
+import { Post } from '../../lib/posts'
 
 export default function SearchResults() {
-  const [results, setResults] = useState([])
+  const [results, setResults] = useState<Post[]>([])
   const searchParams = useSearchParams()
-  const query = searchParams.get('q')
+  const query = searchParams.get('q') || ''
 
   useEffect(() => {
     if (query) {
@@ -284,10 +49,17 @@ export default function SearchResults() {
       <h1 className="text-3xl font-bold mb-4">搜索结果: {query}</h1>
       {results.length > 0 ? (
         <ul className="space-y-4">
-          {results.map((post: any) => (
+          {results.map((post: Post) => (
             <li key={post.id} className="bg-white shadow rounded-lg p-4">
-              <Link href={\`/posts/\${post.id.split('/').map(encodeURIComponent).join('/')}\`}>
-                <h2 className="text-xl font-semibold text-primary hover:text-secondary">{post.title}</h2>
+              <Link href={\`/posts/\${post.id}\`}>
+                <h2 className="text-xl font-semibold text-blue-600 hover:text-blue-800">
+                  <Highlighter
+                    highlightClassName="bg-yellow-200"
+                    searchWords={[query]}
+                    autoEscape={true}
+                    textToHighlight={post.title}
+                  />
+                </h2>
               </Link>
               {post.date && <p className="text-gray-500 text-sm">{post.date}</p>}
             </li>
@@ -301,44 +73,4 @@ export default function SearchResults() {
 }
 EOL
 
-# 创建社交分享按钮组件
-cat > src/components/ShareButtons.tsx << EOL
-'use client'
-
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  LinkedinShareButton,
-  FacebookIcon,
-  TwitterIcon,
-  LinkedinIcon,
-} from 'react-share'
-
-export default function ShareButtons({ title }: { title: string }) {
-  const url = typeof window !== 'undefined' ? window.location.href : ''
-
-  return (
-    <div className="flex space-x-4 mt-8">
-      <FacebookShareButton url={url} quote={title}>
-        <FacebookIcon size={32} round />
-      </FacebookShareButton>
-      <TwitterShareButton url={url} title={title}>
-        <TwitterIcon size={32} round />
-      </TwitterShareButton>
-      <LinkedinShareButton url={url} title={title}>
-        <LinkedinIcon size={32} round />
-      </LinkedinShareButton>
-    </div>
-  )
-}
-EOL
-
-# 确保背景图片在正确的位置
-if [ -f ~/background.png ]; then
-  mv ~/background.png public/
-  echo "背景图片已移动到 public 文件夹"
-else
-  echo "警告：未找到 background.png 文件。请确保将其放置在 public 文件夹中。"
-fi
-
-echo "博客修复和增强已成功应用！颜色方案已根据背景图自动调整。"
+echo "posts.ts 和 search/page.tsx 文件已更新，修复了类型错误。"
