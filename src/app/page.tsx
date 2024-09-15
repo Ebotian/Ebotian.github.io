@@ -5,8 +5,11 @@ export default function Home() {
   const allPostsData = getSortedPostsData()
   return (
     <div>
-      <div className="h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center" style={{backgroundImage: 'url("/background.png")'}}>
-        <h1 className="text-6xl font-bold text-white text-center shadow-lg p-6 bg-black bg-opacity-50 rounded-lg">欢迎来到 Ebotian 的博客</h1>
+      <div className="h-screen bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center relative" style={{backgroundImage: 'url("/background.png")'}}>
+        <h1 className="text-6xl font-bold text-white text-center" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>欢迎来到 Ebotian 的博客</h1>
+        <a href="https://www.pixiv.net/artworks/110554663" target="_blank" rel="noopener noreferrer" className="absolute bottom-4 right-4 text-white text-sm opacity-70 hover:opacity-100 transition-opacity">
+          背景图片来源: Pixiv
+        </a>
       </div>
       <div className="py-16">
         <h2 className="text-4xl font-bold mb-8 text-primary">最新文章</h2>
