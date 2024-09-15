@@ -5,11 +5,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')
   const allPosts = getSortedPostsData()
-
-  const filteredPosts = allPosts.filter(post =>
-    post.title.toLowerCase().includes(query?.toLowerCase() || '') ||
-    post.id.toLowerCase().includes(query?.toLowerCase() || '')
-  )
+  
+  const filteredPosts = allPosts.filter(post => {
+    const title = post.title?.toLowerCase() || ''
+    const id = post.id?.toLowerCase() || ''
+    const searchQuery = query?.toLowerCase() || ''
+    return title.includes(searchQuery) || id.includes(searchQuery)
+  })
 
   return NextResponse.json(filteredPosts)
 }
