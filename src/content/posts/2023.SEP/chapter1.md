@@ -1,3 +1,7 @@
+---
+date: 2023-09-14
+---
+
 # weekly report?
 
 This week, ppt, anki and study source is the main things have been done. Call to Dr.Water Glass has been successful, she said next week I can still make a call, and she will be back home before P.M.9:50. I still don't know what my work will be next week, if possible I want to call her every Tuesday, and if that fails, try another call on Friday. friday could be my "friend day".

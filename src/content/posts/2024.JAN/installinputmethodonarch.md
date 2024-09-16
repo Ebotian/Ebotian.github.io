@@ -1,3 +1,7 @@
+---
+date: 2024-01-11
+---
+
 # install input method on arch
 
 using fcitx5 to fit my wayland based Hyprland&sway environment
