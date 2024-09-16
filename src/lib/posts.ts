@@ -15,7 +15,7 @@ interface PostData {
 
 interface MatterResult {
   data: {
-    [key: string]: any
+    [key: string]: unknown
     date?: string | Date
   }
   content: string
@@ -65,8 +65,8 @@ export function getSortedPostsData(): { [key: string]: PostData[] } {
       matterResult = { data: {}, content: fileContents }
     }
 
-    let date = extractDateFromFileName(fileName) ||
-               (matterResult.data.date ? new Date(matterResult.data.date).toISOString().split('T')[0] : null) ||
+    const date = extractDateFromFileName(fileName) ||
+               (matterResult.data.date ? new Date(matterResult.data.date as string).toISOString().split('T')[0] : null) ||
                getFileModificationDate(fileName)
 
     const title = getTitleFromFileName(fileName)
@@ -79,7 +79,7 @@ export function getSortedPostsData(): { [key: string]: PostData[] } {
 
     return {
       id,
-      date: date,
+      date: date as string,
       title: title,
       contentHtml: contentHtml
     }
@@ -127,8 +127,8 @@ export async function getPostData(id: string[]): Promise<PostData> {
       matterResult = { data: {}, content: fileContents }
     }
 
-    let date = extractDateFromFileName(fullPath) ||
-               (matterResult.data.date ? new Date(matterResult.data.date).toISOString().split('T')[0] : null) ||
+    const date = extractDateFromFileName(fullPath) ||
+               (matterResult.data.date ? new Date(matterResult.data.date as string).toISOString().split('T')[0] : null) ||
                getFileModificationDate(fullPath)
 
     const title = getTitleFromFileName(fullPath)
@@ -142,7 +142,7 @@ export async function getPostData(id: string[]): Promise<PostData> {
     return {
       id: decodedId.join('/'),
       title: title,
-      date: date,
+      date: date as string,
       contentHtml: contentHtml,
     }
   } catch (error) {
