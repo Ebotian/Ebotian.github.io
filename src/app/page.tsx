@@ -2,8 +2,7 @@ import Link from 'next/link'
 import { getSortedPostsData } from '../lib/posts'
 
 export default function Home() {
-  const groupedPosts = getSortedPostsData()
-  const allPosts = Object.values(groupedPosts).flat()
+  const allPosts = getSortedPostsData()
   const latestPostIds = new Set(allPosts.slice(0, 5).map(post => post.id))
 
   return (
@@ -22,26 +21,21 @@ export default function Home() {
               <Link href={`/posts/${id.split('/').map(encodeURIComponent).join('/')}`}>
                 <h3 className="text-2xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h3>
               </Link>
-              <p className="text-gray-500">{date}</p>
+              <p className="text-gray-500">{new Date(date).toLocaleDateString()}</p>
             </li>
           ))}
         </ul>
         <h2 className="text-4xl font-bold my-8 text-primary">文章归档</h2>
-        {Object.entries(groupedPosts).map(([yearMonth, posts]) => (
-          <div key={yearMonth} className="mb-8">
-            <h3 className="text-2xl font-semibold text-secondary mb-4">{yearMonth}</h3>
-            <ul className="space-y-4">
-              {posts.filter(post => !latestPostIds.has(post.id)).map(({ id, date, title }) => (
-                <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-                  <Link href={`/posts/${id.split('/').map(encodeURIComponent).join('/')}`}>
-                    <h4 className="text-xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h4>
-                  </Link>
-                  <p className="text-gray-500 text-sm">{date}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <ul className="space-y-4">
+          {allPosts.filter(post => !latestPostIds.has(post.id)).map(({ id, date, title }) => (
+            <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
+              <Link href={`/posts/${id.split('/').map(encodeURIComponent).join('/')}`}>
+                <h4 className="text-xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h4>
+              </Link>
+              <p className="text-gray-500 text-sm">{new Date(date).toLocaleDateString()}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
