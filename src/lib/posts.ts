@@ -46,11 +46,23 @@ export function getSortedPostsData() {
     const fullPath = path.join(postsDirectory, fileName)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const matterResult = matter(fileContents)
+
+    // 从文件名中提取日期（如果存在）
+    const dateMatch = fileName.match(/^(\d{4}-\d{2}-\d{2})/)
+    const dateFromFileName = dateMatch ? dateMatch[1] : null
+
+    // 获取文件修改日期
+    const stats = fs.statSync(fullPath)
+    const dateFromFileModification = stats.mtime
+
+    // 按优先级选择日期
+    const date = matterResult.data.date || dateFromFileName || dateFromFileModification
+
     return {
       id,
-      title: path.basename(id), // 只使用文件名作为标题
+      title: path.basename(id), // 使用文件名作为标题
       ...(matterResult.data as { date: string; title: string }),
-      date: formatDate(matterResult.data.date)
+      date: formatDate(date)
     }
   })
   return allPostsData.sort((a, b) => a.date < b.date ? 1 : -1)
@@ -76,12 +88,24 @@ export function getPostData(id: string[]) {
       .use(html)
       .processSync(matterResult.content)
     const contentHtml = processedContent.toString()
+
+    // 从文件名中提取日期（如果存在）
+    const dateMatch = path.basename(fullPath).match(/^(\d{4}-\d{2}-\d{2})/)
+    const dateFromFileName = dateMatch ? dateMatch[1] : null
+
+    // 获取文件修改日期
+    const stats = fs.statSync(fullPath)
+    const dateFromFileModification = stats.mtime
+
+    // 按优先级选择日期
+    const date = matterResult.data.date || dateFromFileName || dateFromFileModification
+
     return {
       id: id.join('/'),
       title: path.basename(id[id.length - 1]), // 只使用文件名作为标题
       contentHtml,
       ...(matterResult.data as { date: string; title: string }),
-      date: formatDate(matterResult.data.date)
+      date: formatDate(date)
     }
   } catch (error) {
     console.error(`Error reading file: ${fullPath}`, error)

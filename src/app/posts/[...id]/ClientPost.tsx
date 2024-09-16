@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FaTwitter, FaFacebook, FaLinkedin } from 'react-icons/fa'
+import { FaTwitter, FaFacebook } from 'react-icons/fa'
+import { SiBilibili } from 'react-icons/si'
 
 export default function ClientPost({ postData }) {
   const [currentUrl, setCurrentUrl] = useState('')
@@ -29,8 +30,8 @@ export default function ClientPost({ postData }) {
           <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
             <FaFacebook size={24} />
           </a>
-          <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(postData.title)}`} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900">
-            <FaLinkedin size={24} />
+          <a href={`https://t.bilibili.com/?tab=article&url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(postData.title)}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+            <SiBilibili size={24} />
           </a>
         </div>
       </div>
