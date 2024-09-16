@@ -19,6 +19,25 @@ function getFiles(dir) {
   return result;
 }
 
+function getDateFromFile(filePath: string, fileContent: string): string {
+  const matterResult = matter(fileContent)
+
+  // 1. 尝试从frontmatter中获取日期
+  if (matterResult.data.date) {
+    return formatDate(matterResult.data.date)
+  }
+
+  // 2. 尝试从文件名中获取日期
+  const dateMatch = path.basename(filePath).match(/^(\d{4}-\d{2}-\d{2})/)
+  if (dateMatch) {
+    return formatDate(dateMatch[1])
+  }
+
+  // 3. 使用文件修改日期
+  const stats = fs.statSync(filePath)
+  return formatDate(stats.mtime)
+}
+
 function formatDate(date: string | Date): string {
   if (!date) return '未知日期';
   const d = new Date(date);
@@ -45,21 +64,13 @@ export function getSortedPostsData() {
     const id = fileName.replace(/\.md$/, '')
     const fullPath = path.join(postsDirectory, fileName)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
-    const matterResult = matter(fileContents)
 
-    const dateMatch = fileName.match(/^(\d{4}-\d{2}-\d{2})/)
-    const dateFromFileName = dateMatch ? dateMatch[1] : null
-
-    const stats = fs.statSync(fullPath)
-    const dateFromFileModification = stats.mtime
-
-    const date = matterResult.data.date || dateFromFileName || dateFromFileModification
+    const date = getDateFromFile(fullPath, fileContents)
 
     return {
       id,
       title: path.basename(id), // 使用文件名作为标题
-      ...(matterResult.data as { date: string; title: string }),
-      date: formatDate(date)
+      date: date
     }
   })
   return allPostsData.sort((a, b) => a.date < b.date ? 1 : -1)
@@ -102,23 +113,13 @@ export function getPostData(id: string[]) {
       .processSync(matterResult.content)
     const contentHtml = processedContent.toString()
 
-    // 从文件名中提取日期（如果存在）
-    const dateMatch = path.basename(fullPath).match(/^(\d{4}-\d{2}-\d{2})/)
-    const dateFromFileName = dateMatch ? dateMatch[1] : null
-
-    // 获取文件修改日期
-    const stats = fs.statSync(fullPath)
-    const dateFromFileModification = stats.mtime
-
-    // 按优先级选择日期
-    const date = matterResult.data.date || dateFromFileName || dateFromFileModification
+    const date = getDateFromFile(fullPath, fileContents)
 
     return {
       id: id.join('/'),
       title: path.basename(id[id.length - 1]), // 只使用文件名作为标题
       contentHtml,
-      ...(matterResult.data as { date: string; title: string }),
-      date: formatDate(date)
+      date: date
     }
   } catch (error) {
     console.error(`Error reading file: ${fullPath}`, error)
