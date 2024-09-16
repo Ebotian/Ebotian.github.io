@@ -1,9 +1,8 @@
 import Link from 'next/link'
-import { getSortedPostsData } from '../lib/posts'
+import { getPostsByMonth } from '../lib/posts'
 
 export default function Home() {
-  const allPosts = getSortedPostsData()
-  const latestPostIds = new Set(allPosts.slice(0, 5).map(post => post.id))
+  const postsByMonth = getPostsByMonth()
 
   return (
     <div>
@@ -14,29 +13,29 @@ export default function Home() {
         </a>
       </div>
       <div className="py-16 container mx-auto px-4">
-        <h2 className="text-4xl font-bold mb-8 text-primary">最新文章</h2>
-        <ul className="space-y-4">
-          {allPosts.slice(0, 5).map(({ id, date, title }) => (
-            <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-              <Link href={`/posts/${id}`} className="block">
-                <h3 className="text-2xl font-semibold text-secondary hover:text-primary mb-2">{title}</h3>
-                <p className="text-gray-500">{date}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <h2 className="text-4xl font-bold my-8 text-primary">文章归档</h2>
-        <ul className="space-y-4">
-          {allPosts.filter(post => !latestPostIds.has(post.id)).map(({ id, date, title }) => (
-            <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-              <Link href={`/posts/${id}`} className="block">
-                <h4 className="text-xl font-semibold text-secondary hover:text-primary mb-2">{title}</h4>
-                <p className="text-gray-500 text-sm">{date}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <h2 className="text-4xl font-bold mb-8 text-primary">我的文章</h2>
+        {Object.entries(postsByMonth).map(([monthKey, posts]) => (
+          <div key={monthKey} className="mb-8">
+            <h3 className="text-2xl font-semibold mb-4 text-secondary">{formatMonthKey(monthKey)}</h3>
+            <ul className="space-y-4">
+              {posts.map(({ id, date, title }) => (
+                <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
+                  <Link href={`/posts/${id}`} className="block">
+                    <h4 className="text-xl font-semibold text-secondary hover:text-primary mb-2">{title}</h4>
+                    <p className="text-gray-500 text-sm">{date}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   )
+}
+
+function formatMonthKey(monthKey: string): string {
+  const [year, month] = monthKey.split('-')
+  const date = new Date(parseInt(year), parseInt(month) - 1, 1)
+  return date.toLocaleString('zh-CN', { year: 'numeric', month: 'long' })
 }

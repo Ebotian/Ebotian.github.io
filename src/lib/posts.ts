@@ -47,15 +47,12 @@ export function getSortedPostsData() {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const matterResult = matter(fileContents)
 
-    // 从文件名中提取日期（如果存在）
     const dateMatch = fileName.match(/^(\d{4}-\d{2}-\d{2})/)
     const dateFromFileName = dateMatch ? dateMatch[1] : null
 
-    // 获取文件修改日期
     const stats = fs.statSync(fullPath)
     const dateFromFileModification = stats.mtime
 
-    // 按优先级选择日期
     const date = matterResult.data.date || dateFromFileName || dateFromFileModification
 
     return {
@@ -66,6 +63,22 @@ export function getSortedPostsData() {
     }
   })
   return allPostsData.sort((a, b) => a.date < b.date ? 1 : -1)
+}
+
+export function getPostsByMonth() {
+  const posts = getSortedPostsData()
+  const postsByMonth = {}
+
+  posts.forEach(post => {
+    const [year, month] = post.date.split('-')
+    const key = `${year}-${month}`
+    if (!postsByMonth[key]) {
+      postsByMonth[key] = []
+    }
+    postsByMonth[key].push(post)
+  })
+
+  return postsByMonth
 }
 
 export function getAllPostIds() {
