@@ -6,9 +6,9 @@ import html from 'remark-html'
 
 const postsDirectory = path.join(process.cwd(), 'content', 'posts')
 
-function getFiles(dir) {
+function getFiles(dir: string): string[] {
   const files = fs.readdirSync(dir, { withFileTypes: true });
-  let result = [];
+  let result: string[] = [];
   for (const file of files) {
     if (file.isDirectory()) {
       result = result.concat(getFiles(path.join(dir, file.name)).map(f => path.join(file.name, f)));
@@ -58,9 +58,16 @@ function formatDate(date: string | Date): string {
   return d.toISOString().split('T')[0];
 }
 
-export function getSortedPostsData() {
+interface PostData {
+  id: string;
+  title: string;
+  date: string;
+  contentHtml?: string;
+}
+
+export function getSortedPostsData(): PostData[] {
   const fileNames = getFiles(postsDirectory)
-  const allPostsData = fileNames.map((fileName) => {
+  const allPostsData = fileNames.map((fileName): PostData => {
     const id = fileName.replace(/\.md$/, '')
     const fullPath = path.join(postsDirectory, fileName)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
@@ -76,9 +83,9 @@ export function getSortedPostsData() {
   return allPostsData.sort((a, b) => a.date < b.date ? 1 : -1)
 }
 
-export function getPostsByMonth() {
+export function getPostsByMonth(): { [key: string]: PostData[] } {
   const posts = getSortedPostsData()
-  const postsByMonth = {}
+  const postsByMonth: { [key: string]: PostData[] } = {}
 
   posts.forEach(post => {
     const [year, month] = post.date.split('-')
@@ -92,7 +99,7 @@ export function getPostsByMonth() {
   return postsByMonth
 }
 
-export function getAllPostIds() {
+export function getAllPostIds(): { params: { id: string[] } }[] {
   const fileNames = getFiles(postsDirectory)
   return fileNames.map(fileName => {
     return {
@@ -103,7 +110,7 @@ export function getAllPostIds() {
   })
 }
 
-export function getPostData(id: string[]) {
+export function getPostData(id: string[]): PostData {
   const fullPath = path.join(postsDirectory, ...id) + '.md'
   try {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
