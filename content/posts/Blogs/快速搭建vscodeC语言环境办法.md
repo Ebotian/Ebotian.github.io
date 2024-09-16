@@ -1,3 +1,7 @@
+---
+date: 2023-03-08
+---
+
 # Vscode + C + Git(connected to github)
 
 * 1. install [vscode](https://code.visualstudio.com/)

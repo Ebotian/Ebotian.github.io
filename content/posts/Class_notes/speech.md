@@ -1,3 +1,7 @@
+---
+date: 2023-09-21
+---
+
 [1]Teacher and Classmates,[2]
 
 Good morning![3] Today, I am thrilled to introduce you to a technology that feels almost futuristic, yet is increasingly becoming a part of our everyday lives.[4] This technology allows us to see what our naked eyes cannot - the world of heat. Yes, I am talking about Thermal Imaging.

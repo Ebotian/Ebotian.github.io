@@ -1,3 +1,7 @@
+---
+date: 2023-01-02
+---
+
 # Rules
 
 This document contains a description of all rules, what they are checking for,

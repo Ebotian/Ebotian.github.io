@@ -1,3 +1,7 @@
+---
+date: 2023-10-23
+---
+
 # record again
 
 writing in english has become an essential part of arch linux. for some reason no chinese user use pinyin there because popular repository (for arch)has not been update for a long time.

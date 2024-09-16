@@ -1,3 +1,7 @@
+---
+date: 2023-11-21
+---
+
 # lecture 3
 
 types of force:

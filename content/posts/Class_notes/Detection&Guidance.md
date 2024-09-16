@@ -1,3 +1,7 @@
+---
+date: 2023-08-30
+---
+
 ## Lecture 1
 
 Definition of detection and identification technology:

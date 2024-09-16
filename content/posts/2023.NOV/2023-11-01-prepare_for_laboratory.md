@@ -1,3 +1,7 @@
+---
+date: 2023-11-26
+---
+
 # prepare for laboratory
 
 ALL THESE TASKS MUST BE PUSHED PARALLEL
