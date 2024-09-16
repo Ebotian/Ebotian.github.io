@@ -1,31 +1,3 @@
-#!/bin/bash
-
-# 确保脚本在错误时停止执行
-set -e
-
-echo "开始第九轮修复过程..."
-
-# 更新 src/app/posts/[...id]/page.tsx
-echo "更新 src/app/posts/[...id]/page.tsx..."
-cat > src/app/posts/[...id]/page.tsx << 'EOL'
-import { getPostData, getAllPostIds } from '../../../lib/posts'
-import ClientPost from './ClientPost'
-
-export default function Post({ params }: { params: { id: string[] } }) {
-  const postData = getPostData(params.id.map(decodeURIComponent))
-
-  return <ClientPost postData={postData} />
-}
-
-export async function generateStaticParams() {
-  const paths = getAllPostIds()
-  return paths
-}
-EOL
-
-# 创建 src/app/posts/[...id]/ClientPost.tsx
-echo "创建 src/app/posts/[...id]/ClientPost.tsx..."
-cat > src/app/posts/[...id]/ClientPost.tsx << 'EOL'
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -65,14 +37,3 @@ export default function ClientPost({ postData }) {
     </div>
   )
 }
-EOL
-
-# 安装依赖
-echo "安装依赖..."
-npm install react-icons
-
-# 构建项目
-echo "构建项目..."
-npm run build
-
-echo "第九轮修复过程完成。请将更改推送到 Git 仓库，然后重新部署到 Vercel。"
