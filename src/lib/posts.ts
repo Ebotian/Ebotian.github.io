@@ -22,7 +22,21 @@ function getFiles(dir) {
 function formatDate(date: string | Date): string {
   if (!date) return '未知日期';
   const d = new Date(date);
-  return isNaN(d.getTime()) ? '未知日期' : d.toISOString().split('T')[0];
+  if (isNaN(d.getTime())) {
+    // 尝试解析 "YYYY-MM-DD" 格式
+    const parts = date.toString().split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // 月份从0开始
+      const day = parseInt(parts[2], 10);
+      const newDate = new Date(year, month, day);
+      if (!isNaN(newDate.getTime())) {
+        return newDate.toISOString().split('T')[0];
+      }
+    }
+    return '未知日期';
+  }
+  return d.toISOString().split('T')[0];
 }
 
 export function getSortedPostsData() {
@@ -34,6 +48,7 @@ export function getSortedPostsData() {
     const matterResult = matter(fileContents)
     return {
       id,
+      title: path.basename(id), // 只使用文件名作为标题
       ...(matterResult.data as { date: string; title: string }),
       date: formatDate(matterResult.data.date)
     }
@@ -63,6 +78,7 @@ export function getPostData(id: string[]) {
     const contentHtml = processedContent.toString()
     return {
       id: id.join('/'),
+      title: path.basename(id[id.length - 1]), // 只使用文件名作为标题
       contentHtml,
       ...(matterResult.data as { date: string; title: string }),
       date: formatDate(matterResult.data.date)
