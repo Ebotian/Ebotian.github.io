@@ -3,62 +3,44 @@
 # 确保我们在正确的目录
 cd ~/ebotian_blog
 
-# 安装 react-highlight-words 的类型定义
-npm install --save-dev @types/react-highlight-words
-
-# 更新 search/page.tsx 文件
-cat > src/app/search/page.tsx << EOL
-'use client'
-
-import { useState, useEffect } from 'react'
+# 更新 src/app/posts/[...id]/page.tsx 文件
+cat > src/app/posts/[...id]/page.tsx << 'EOL'
+import { getPostData, getAllPostIds } from '../../../lib/posts'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import Highlighter from 'react-highlight-words'
-import { Post } from '../../lib/posts'
+import ShareButtons from '../../../components/ShareButtons'
+import { headers } from 'next/headers'
 
-export default function SearchResults() {
-  const [results, setResults] = useState<Post[]>([])
-  const searchParams = useSearchParams()
-  const query = searchParams.get('q') || ''
-
-  useEffect(() => {
-    if (query) {
-      fetch(\`/api/search?q=\${encodeURIComponent(query)}\`)
-        .then(res => res.json())
-        .then(data => setResults(data))
-    }
-  }, [query])
+export default async function Post({ params }: { params: { id: string[] } }) {
+  const postData = await getPostData(params.id)
+  const headersList = headers()
+  const domain = headersList.get('host') || 'localhost:3000'
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+  const currentUrl = `${protocol}://${domain}/posts/${params.id.join('/')}`
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-4">搜索结果: {query}</h1>
-      {results.length > 0 ? (
-        <ul className="space-y-4">
-          {results.map((post: Post) => (
-            <li key={post.id} className="bg-white shadow rounded-lg p-4">
-              <Link href={\`/posts/\${post.id}\`}>
-                <h2 className="text-xl font-semibold text-blue-600 hover:text-blue-800">
-                  <Highlighter
-                    highlightClassName="bg-yellow-200"
-                    searchWords={[query]}
-                    autoEscape={true}
-                    textToHighlight={post.title}
-                  />
-                </h2>
-              </Link>
-              {post.date && <p className="text-gray-500 text-sm">{post.date}</p>}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>没有找到相关结果。</p>
-      )}
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <Link href="/" className="text-blue-600 hover:underline mb-6 inline-block">&larr; 返回首页</Link>
+      <article className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="p-6">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">{postData.title}</h1>
+          <div className="text-gray-600 mb-4">{postData.date}</div>
+          <div className="prose lg:prose-xl max-w-none" dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+        </div>
+      </article>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">分享这篇文章</h2>
+        <ShareButtons url={currentUrl} title={postData.title} />
+      </div>
     </div>
   )
 }
+
+export async function generateStaticParams() {
+  const paths = getAllPostIds()
+  return paths
+}
 EOL
 
-echo "search/page.tsx 文件已更新，安装了 react-highlight-words 的类型定义。"
+echo "src/app/posts/[...id]/page.tsx 文件已更新"
 
-# 更新 package.json 以包含新安装的依赖
-npm install
+echo "文章页面更新完成，现在可以自动获取网站域名。请重新运行 'npm run dev' 来测试更改。"

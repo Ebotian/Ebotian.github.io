@@ -1,30 +1,43 @@
-'use client'
+import React from 'react'
+import { FaWeibo, FaTwitter, FaFacebook } from 'react-icons/fa'
 
-import React from 'react';
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  LinkedinShareButton,
-  FacebookIcon,
-  TwitterIcon,
-  LinkedinIcon,
-} from 'react-share';
+interface ShareButtonsProps {
+  url: string
+  title: string
+}
 
-export default function ShareButtons({ title }: { title: string }) {
-  const url = typeof window !== 'undefined' ? window.location.href : '';
-  const hashtag = `#${encodeURIComponent(title.replace(/\s+/g, ""))}`;
+const ShareButtons: React.FC<ShareButtonsProps> = ({ url, title }) => {
+  const encodedUrl = encodeURIComponent(url)
+  const encodedTitle = encodeURIComponent(title)
 
   return (
-    <div className="flex space-x-4 mt-8">
-      <FacebookShareButton url={url} hashtag={hashtag}>
-        <FacebookIcon size={32} round />
-      </FacebookShareButton>
-      <TwitterShareButton url={url} title={title}>
-        <TwitterIcon size={32} round />
-      </TwitterShareButton>
-      <LinkedinShareButton url={url} title={title}>
-        <LinkedinIcon size={32} round />
-      </LinkedinShareButton>
+    <div className="flex space-x-4">
+      <a
+        href={`http://service.weibo.com/share/share.php?url=${encodedUrl}&title=${encodedTitle}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-red-600 hover:text-red-700"
+      >
+        <FaWeibo size={24} />
+      </a>
+      <a
+        href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-400 hover:text-blue-500"
+      >
+        <FaTwitter size={24} />
+      </a>
+      <a
+        href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:text-blue-700"
+      >
+        <FaFacebook size={24} />
+      </a>
     </div>
-  );
+  )
 }
+
+export default ShareButtons
