@@ -4,6 +4,7 @@ import { getSortedPostsData } from '../lib/posts'
 export default function Home() {
   const groupedPosts = getSortedPostsData()
   const allPosts = Object.values(groupedPosts).flat()
+  const latestPostIds = new Set(allPosts.slice(0, 5).map(post => post.id))
 
   return (
     <div>
@@ -30,7 +31,7 @@ export default function Home() {
           <div key={yearMonth} className="mb-8">
             <h3 className="text-2xl font-semibold text-secondary mb-4">{yearMonth}</h3>
             <ul className="space-y-4">
-              {posts.map(({ id, date, title }) => (
+              {posts.filter(post => !latestPostIds.has(post.id)).map(({ id, date, title }) => (
                 <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
                   <Link href={`/posts/${id.split('/').map(encodeURIComponent).join('/')}`}>
                     <h4 className="text-xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h4>
