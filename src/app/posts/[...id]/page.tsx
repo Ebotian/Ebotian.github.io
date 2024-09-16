@@ -1,7 +1,9 @@
 import { getPostData, getAllPostIds } from '../../../lib/posts'
 
 export default function Post({ params }: { params: { id: string[] } }) {
+  console.log('Params:', params);
   const postData = getPostData(params.id)
+  console.log('Post data:', postData);
 
   return (
     <article className="prose lg:prose-xl mx-auto px-4 py-8">

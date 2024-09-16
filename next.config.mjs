@@ -12,6 +12,17 @@ const nextConfig = {
     disableStaticImages: false,
   },
   webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.pdf$/,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            name: '[path][name].[ext]',
+          },
+        },
+      ],
+    })
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
