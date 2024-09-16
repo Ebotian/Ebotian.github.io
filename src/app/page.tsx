@@ -18,10 +18,10 @@ export default function Home() {
         <ul className="space-y-4">
           {allPosts.slice(0, 5).map(({ id, date, title }) => (
             <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-              <Link href={`/posts/${id.split('/').map(encodeURIComponent).join('/')}`}>
+              <Link href={`/posts/${id.split('/').join('/')}`}>
                 <h3 className="text-2xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h3>
               </Link>
-              <p className="text-gray-500">{new Date(date).toLocaleDateString()}</p>
+              <p className="text-gray-500">{date}</p>
             </li>
           ))}
         </ul>
@@ -29,10 +29,10 @@ export default function Home() {
         <ul className="space-y-4">
           {allPosts.filter(post => !latestPostIds.has(post.id)).map(({ id, date, title }) => (
             <li key={id} className="bg-white shadow-lg rounded-lg p-6 transition duration-300 ease-in-out hover:shadow-xl">
-              <Link href={`/posts/${id.split('/').map(encodeURIComponent).join('/')}`}>
+              <Link href={`/posts/${id.split('/').join('/')}`}>
                 <h4 className="text-xl font-semibold text-secondary hover:text-primary mb-2">{title || id}</h4>
               </Link>
-              <p className="text-gray-500 text-sm">{new Date(date).toLocaleDateString()}</p>
+              <p className="text-gray-500 text-sm">{date}</p>
             </li>
           ))}
         </ul>
