@@ -14,7 +14,7 @@ def split_file(input_file, output_dir):
     # 为每个部分创建一个新的 Markdown 文件
     for i, section in enumerate(sections, 1):
         if section.strip():  # 忽略空部分
-            output_file = os.path.join(output_dir, f'高中随笔第{i}页.md')
+            output_file = os.path.join(output_dir, f'高中随笔第{i:02d}页.md')
             with open(output_file, 'w', encoding='utf-8') as file:
                 file.write(section.strip() + '\n')
 
