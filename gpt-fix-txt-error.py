@@ -77,5 +77,5 @@ def process_markdown_file(file_path):
     print(f"Corrected file saved as: {output_file_path}")
 
 # 使用示例
-markdown_file_path = r'C:\Users\Lenovo\Desktop\ebotian-blog\content\posts\2024.9\高中随笔全本原始OCR版.md'  # 替换为您的 Markdown 文件路径
+markdown_file_path = r'C:\Users\Lenovo\Desktop\ebotian-blog\content\posts\2024.9\信纸随笔全本.md'  # 替换为您的 Markdown 文件路径
 process_markdown_file(markdown_file_path)
