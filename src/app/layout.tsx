@@ -4,6 +4,9 @@ import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import Search from '../components/Search'
+import dynamic from 'next/dynamic'
+
+const GoogleAnalytics = dynamic(() => import('../components/GoogleAnalytics'), { ssr: false })
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -44,6 +47,7 @@ export default function RootLayout({
             © 2024 Ebotian 的博客. All rights reserved.
           </div>
         </footer>
+        <GoogleAnalytics GA_MEASUREMENT_ID="G-NDXHPC8TS9" />
       </body>
     </html>
   )
