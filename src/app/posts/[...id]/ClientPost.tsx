@@ -16,7 +16,9 @@ export default function ClientPost({ postData }) {
       <article className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6">
           <h1 className="text-3xl font-bold mb-4">{postData.title}</h1>
-          <div className="text-gray-500 mb-4">{postData.date}</div>
+          <div className="text-gray-500 mb-4">
+            {postData.date} • {postData.wordCount} 字
+          </div>
           <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
         </div>
       </article>

@@ -22,18 +22,15 @@ function getFiles(dir: string): string[] {
 function getDateFromFile(filePath: string, fileContent: string): string {
   const matterResult = matter(fileContent)
 
-  // 1. 尝试从frontmatter中获取日期
   if (matterResult.data.date) {
     return formatDate(matterResult.data.date)
   }
 
-  // 2. 尝试从文件名中获取日期
   const dateMatch = path.basename(filePath).match(/^(\d{4}-\d{2}-\d{2})/)
   if (dateMatch) {
     return formatDate(dateMatch[1])
   }
 
-  // 3. 使用文件修改日期
   const stats = fs.statSync(filePath)
   return formatDate(stats.mtime)
 }
@@ -42,11 +39,10 @@ function formatDate(date: string | Date): string {
   if (!date) return '未知日期';
   const d = new Date(date);
   if (isNaN(d.getTime())) {
-    // 尝试解析 "YYYY-MM-DD" 格式
     const parts = date.toString().split('-');
     if (parts.length === 3) {
       const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1; // 月份从0开始
+      const month = parseInt(parts[1], 10) - 1;
       const day = parseInt(parts[2], 10);
       const newDate = new Date(year, month, day);
       if (!isNaN(newDate.getTime())) {
@@ -58,11 +54,20 @@ function formatDate(date: string | Date): string {
   return d.toISOString().split('T')[0];
 }
 
+export function countWords(str: string): number {
+  str = str.replace(/<[^>]*>/g, '');
+  str = str.replace(/[^\w\s\u4e00-\u9fa5]/g, '');
+  const words = str.trim().split(/\s+/);
+  const chineseCharacters = str.match(/[\u4e00-\u9fa5]/g) || [];
+  return words.length + chineseCharacters.length;
+}
+
 interface PostData {
   id: string;
   title: string;
   date: string;
   contentHtml?: string;
+  wordCount?: number;
 }
 
 export function getSortedPostsData(): PostData[] {
@@ -73,11 +78,15 @@ export function getSortedPostsData(): PostData[] {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
 
     const date = getDateFromFile(fullPath, fileContents)
+    const processedContent = remark().use(html).processSync(fileContents)
+    const contentHtml = processedContent.toString()
 
     return {
       id,
-      title: path.basename(id), // 使用文件名作为标题
-      date: date
+      title: path.basename(id),
+      date: date,
+      contentHtml: contentHtml,
+      wordCount: countWords(contentHtml)
     }
   })
   return allPostsData.sort((a, b) => a.date < b.date ? 1 : -1)
@@ -124,9 +133,10 @@ export function getPostData(id: string[]): PostData {
 
     return {
       id: id.join('/'),
-      title: path.basename(id[id.length - 1]), // 只使用文件名作为标题
+      title: path.basename(id[id.length - 1]),
       contentHtml,
-      date: date
+      date: date,
+      wordCount: countWords(contentHtml)
     }
   } catch (error) {
     console.error(`Error reading file: ${fullPath}`, error)
@@ -134,7 +144,8 @@ export function getPostData(id: string[]): PostData {
       id: id.join('/'),
       contentHtml: '<p>文章内容不可用</p>',
       title: '文章不存在',
-      date: '未知日期'
+      date: '未知日期',
+      wordCount: 0
     }
   }
 }

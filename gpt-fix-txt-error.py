@@ -4,7 +4,7 @@ import re
 from tqdm import tqdm
 
 # 设置 API 密钥和 URL
-API_KEY = "sk-dhizyQ5I8IQhOd9o3aD9802eEcA0470d92Eb287c611f404c"
+API_KEY = "#替换为我的apikey#"
 API_HOST = "api.b3n.fun"
 API_PATH = "/v1/chat/completions"
 
